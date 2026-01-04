@@ -9,3 +9,5 @@ Analysis questions to answer:
 + Does fuel efficiency decrease with higher horsepower?  
 + How significant is the effect of weight on fuel efficiency? Is it more than horsepower?  
 + Does transmission type affect fuel efficiency?
+
+Do view the 'mtcars.md' file for my HTML documentation for this project 🙂
