@@ -1,0 +1,95 @@
+---
+title: 'mtcars dataset: Rstudio practice analysis'
+author: "Ong Jing Ying"
+date: "2026-01-02"
+output: rmarkdown::github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In this data visualisation project, I will be performing basic exploratory data analysis on the mtcars dataset from Rstudio’s default datasets package.
+
+The mtcars (Motor Trend Car Road Tests) dataset was extracted from the 1974 Motor Trends US magazine, 10 aspects of automobile design and performance for 32 automobiles (1973–74 models). (11 columns x 32 rows).
+
+## Step 1: Setting up my environment
+loading the `ggplot2` & `dplyr` packages
+
+```{r loading packages}
+library(ggplot2)
+library(dplyr)
+```
+
+
+loading the `mtcars` dataset & getting a summary of it
+```{r loading & summarising dataset}
+data(mtcars)
+str(mtcars)
+```
+
+the dataframe format is as follows:  
+[, 1]	mpg	Miles/(US) gallon  
+[, 2]	cyl	Number of cylinders  
+[, 3]	disp	Displacement (cu.in.)  
+[, 4]	hp	Gross horsepower  
+[, 5]	drat	Rear axle ratio  
+[, 6]	wt	Weight (1000 lbs)  
+[, 7]	qsec	1/4 mile time  
+[, 8]	vs	Engine (0 = V-shaped, 1 = straight)  
+[, 9]	am	Transmission (0 = automatic, 1 = manual)  
+[,10]	gear	Number of forward gears  
+[,11]	carb	Number of carburetors  
+
+
+you can preview the first 6 rows of the dataset with `head()` function
+```{r preview dataset}
+head(mtcars)
+```
+
+## Step 2: Answering basic questions
+### Does fuel efficiency decrease with higher horsepower?
+fuel efficiency is measured in mpg (Miles/gallon). as such, I will plot mpg(miles per gallon) against hp(horsepower)
+```{r plotting mpg against hp}
+ggplot(data = mtcars) + geom_point(mapping = aes(x=hp, y=mpg))
+```
+
+As expected, as horsepower increases, miles per gallon decreases because more powerful engines would require more fuel to operate.
+
+### The effect of weight on fuel efficiency
+weight definitely negatively impacts fuel efficiency. But does weight or horsepower affect it more?
+```{r Plotting mpg against wt}
+ggplot(data = mtcars) + geom_point(mapping = aes(x=wt, y=mpg))
+```
+
+### Which factor impacts fuel efficiency the most? horsepower (hp) or weight (wt)
+In order to compare which variable negatively affects fuel efficiency more, we can use the `cor()` function to calculate correlation coefficient between the variables
+```{r calculating correlation coefficient between weight and mpg}
+cor(mtcars$wt, mtcars$mpg)
+```
+```{r calculating correlation coefficient between horsepower and mpg}
+cor(mtcars$hp, mtcars$mpg)
+```
+From the calculated results, I can confirm that weight is the most significant contributing factor to fuel efficiency (mpg) in automobiles
+
+
+### Is manual more efficient than automatic?
+this answer could be easily answered by comparing the average mpg of automobiles by transmission type
+```{r comparing avg mpg between transmission types}
+avg_mpg <- mtcars %>% group_by(am) %>% 
+  summarise(mpg = mean(mpg))
+avg_mpg
+```
+
+with 0= automatic and 1= manual, you could determine that manual cars are generally more efficient from the result. 
+
+however, as stated before, horsepower & weight also affects fuel efficiency of the cars. thus using the average to answer this question would be unfair if the cars didn't have exactly the same weight & horsepower.
+
+```{r}
+ggplot(data = mtcars) + geom_point(mapping = aes(x=wt, y=mpg, colour = as.factor(am)))
+ggplot(data = mtcars) + geom_point(mapping = aes(x=hp, y=mpg, colour = as.factor(am)))
+```
+
+from the graphs, automatic cars in this dataset are mostly heavier & have more powerful engines than the manual ones. This meant their average mpg would naturally be lower as compared to the manual cars, thus it is not possible to determine which transmission type has better fuel efficiency just from comparing average mpg alone.
+
+I believe that it is actually possible to compare fuel efficiency between the two transmission types fairly by utilising linear regression to compare both at the same horsepower & weight. However it is currently beyond my skillset so my conclusion stops here.
